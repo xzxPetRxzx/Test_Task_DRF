@@ -18,3 +18,18 @@ class OperationAdmin(admin.ModelAdmin):
     list_filter = ('wallet', 'operation_type', 'amount', 'created_at')  # Фильтры в списке объектов
     ordering = ('-created_at',)  # Сортировка по умолчанию
 
+
+class InsufficantFundsError(Exception):
+    def __init__(self, *args):
+        if args:
+            self.message = args[0]
+        else:
+            self.message = None
+
+    def __str__(self):
+        print('calling str')
+        if self.message:
+            return f'InsufficantFundsError, {self.message} '
+        else:
+            return 'InsufficantFundsError, Недостаточно средств на балансе'
+

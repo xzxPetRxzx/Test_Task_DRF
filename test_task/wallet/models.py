@@ -9,6 +9,11 @@ class Wallet(models.Model):
     # Баланс кошелька
     balance = models.DecimalField(max_digits=20, decimal_places=2, default=0.00)
 
+    # Изменение баланса
+    def change_balance(self, amount):
+        self.balance += amount
+        self.save()
+
 
 # Модель операций(истории операций)
 class Operation(models.Model):
