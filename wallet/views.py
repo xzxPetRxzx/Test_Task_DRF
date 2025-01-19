@@ -31,7 +31,7 @@ class WalletOperationView(APIView):
         serializer = OperationSerializer(data=request.data)
         # Не валидный json
         if not serializer.is_valid():
-            return Response(data=serializer.errors,
+            return Response(data={'error': 'Неверный запрос'},
                             status=status.HTTP_400_BAD_REQUEST)
         # Пробуем обработать запрос:
         try:
