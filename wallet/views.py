@@ -19,8 +19,10 @@ class WalletView(APIView):
             return Response(serializer.data)
         # Ловим ошибку DoesNotExist, возвращаем ответ и статус 404
         except Wallet.DoesNotExist:
-            return Response(data={'error': 'Кошелек не найден'},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                data={'error': 'Кошелек не найден'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 
 # View для операций с кошельком
@@ -31,8 +33,10 @@ class WalletOperationView(APIView):
         serializer = OperationSerializer(data=request.data)
         # Не валидный json
         if not serializer.is_valid():
-            return Response(data={'error': 'Неверный запрос'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={'error': 'Неверный запрос'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         # Пробуем обработать запрос:
         try:
             # Получаем кошелек для изменения(если не найден ловим ошибку)
@@ -51,26 +55,37 @@ class WalletOperationView(APIView):
                 else:
                     raise InsufficantFundsError('Недостаточно средств')
                     # Создаем операцию, обновляем кошелек из БД
-            operation = Operation.objects.create(wallet=wallet,
-                                                 operation_type=operation_type,
-                                                 amount=amount)
+            operation = Operation.objects.create(
+                wallet=wallet,
+                operation_type=operation_type,
+                amount=amount
+            )
             wallet.refresh_from_db()
             # Возвращаем успешное выполнение
-            return Response(data={'wallet_uuid': wallet.wallet_uuid,
-                                  'operation': operation.operation_type,
-                                  'amount': f'{operation.amount:.2f}',
-                                  'balance': f'{wallet.balance:.2f}'},
-                            status=status.HTTP_200_OK)
+            return Response(
+                data={
+                    'wallet_uuid': wallet.wallet_uuid,
+                    'operation': operation.operation_type,
+                    'amount': f'{operation.amount:.2f}',
+                    'balance': f'{wallet.balance:.2f}'
+                },
+                status=status.HTTP_200_OK)
 
         # Кошелька не существует
         except Wallet.DoesNotExist:
-            return Response(data={'error': 'Кошелек не найден'},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                data={'error': 'Кошелек не найден'},
+                status=status.HTTP_404_NOT_FOUND
+            )
         # Недостаточно средств на балансе(дописать класс ошибки)
         except InsufficantFundsError as e:
-             return Response(data={'error': str(e)},
-                             status=status.HTTP_400_BAD_REQUEST)
+             return Response(
+                 data={'error': str(e)},
+                 status=status.HTTP_400_BAD_REQUEST
+             )
         # Все остальные ошибки
         except Exception as e:
-            return Response(data={'error': str(e)},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                data={'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
