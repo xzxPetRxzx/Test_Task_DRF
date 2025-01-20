@@ -29,7 +29,7 @@ class InsufficantFundsError(Exception):
     def __str__(self):
         print('calling str')
         if self.message:
-            return f'InsufficantFundsError, {self.message} '
+            return f'{self.message}'
         else:
             return 'InsufficantFundsError, Недостаточно средств на балансе'
 

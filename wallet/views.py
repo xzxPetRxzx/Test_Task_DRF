@@ -58,13 +58,13 @@ class WalletOperationView(APIView):
             # Возвращаем успешное выполнение
             return Response(data={'wallet_uuid': wallet.wallet_uuid,
                                   'operation': operation.operation_type,
-                                  'amount': operation.amount,
-                                  'balance': wallet.balance},
+                                  'amount': f'{operation.amount:.2f}',
+                                  'balance': f'{wallet.balance:.2f}'},
                             status=status.HTTP_200_OK)
 
         # Кошелька не существует
         except Wallet.DoesNotExist:
-            return Response(data={'error': 'Кошелька не существует'},
+            return Response(data={'error': 'Кошелек не найден'},
                             status=status.HTTP_404_NOT_FOUND)
         # Недостаточно средств на балансе(дописать класс ошибки)
         except InsufficantFundsError as e:
