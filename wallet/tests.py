@@ -1,7 +1,9 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 from wallet.models import Wallet
+
 
 # Класс тестов
 class WalletAPITest(APITestCase):
@@ -116,7 +118,7 @@ class WalletAPITest(APITestCase):
         self.wallet.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.wallet.balance, balance)
-        self.assertEqual(response.json(),answer)
+        self.assertEqual(response.json(), answer)
 
     # Тест обработки некорректного json
     def test_post_operation_incorrect_json(self):
