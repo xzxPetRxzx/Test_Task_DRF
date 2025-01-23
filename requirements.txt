@@ -1,3 +1,5 @@
 django == 5.1.5
 djangorestframework == 3.15.2
-postgres
+psycopg2
+uvicorn
+asgiref

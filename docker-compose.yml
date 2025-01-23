@@ -1,12 +1,13 @@
 services:
   # Сервис для Django
   web:
-    command: python manage.py runserver 0.0.0.0:8000
+    command: uvicorn test_task.asgi:application --host 0.0.0.0 --port 8000
     build: .
     volumes:
       - .:/code
     ports:
       - "8000:8000"
+      - "8089:8089"
     environment:
       - POSTGRES_URL=postgres:${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}

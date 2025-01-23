@@ -11,9 +11,9 @@ from .serialisers import WalletSerializer, OperationSerializer
 
 # View для запроса состояния кошелька
 class WalletView(APIView):
-    async def get(self, request, wallet_uuid):
+    def get(self, request, wallet_uuid):
         try:
-            wallet = sync_to_async(Wallet.objects.get)(wallet_uuid=wallet_uuid)
+            wallet = Wallet.objects.get(wallet_uuid=wallet_uuid)
             serializer = WalletSerializer(wallet)
             return Response(serializer.data)
         except Wallet.DoesNotExist:
@@ -25,7 +25,7 @@ class WalletView(APIView):
 
 # View для операций с кошельком
 class WalletOperationView(APIView):
-    async def post(self, request, wallet_uuid):
+    def post(self, request, wallet_uuid):
         serializer = OperationSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -33,8 +33,8 @@ class WalletOperationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         try:
-            async with transaction.atomic():
-                wallet = await sync_to_async(Wallet.objects.select_for_update().get)(wallet_uuid=wallet_uuid)
+            with transaction.atomic():
+                wallet = Wallet.objects.select_for_update().get(wallet_uuid=wallet_uuid)
                 operation_type = serializer.validated_data['operationType']
                 amount = serializer.validated_data['amount']
                 if operation_type == 'WITHDRAW' and wallet.balance < amount:
@@ -46,9 +46,9 @@ class WalletOperationView(APIView):
                     wallet.balance = F('balance') + amount
                 else:
                     wallet.balance = F('balance') - amount
-                await sync_to_async(wallet.save)()
-                await sync_to_async(wallet.refresh_from_db)()
-                operation = await sync_to_async(Operation.objects.create)(
+                wallet.save()
+                wallet.refresh_from_db()
+                operation = Operation.objects.create(
                     wallet=wallet,
                     operation_type=operation_type,
                     amount=amount
